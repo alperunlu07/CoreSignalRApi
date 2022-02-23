@@ -80,11 +80,13 @@ namespace CoreApi.Controllers
         public async Task<IActionResult> Authenticate(NewUser newUser)
         {
             if(newUser.userName == null || newUser.password == null)
-                return BadRequest(new { message = "Null error" });
+                return BadRequest(new { reqTypes = 0, message = "Null error" });
             var user = await _context.User.SingleOrDefaultAsync(x => x.userName == newUser.userName && x.password == MD5Hash(newUser.password));
              
             if (user == null)
-                return BadRequest(new { message = "Kullanici veya sifre hatalı!" });
+                return BadRequest(new { reqTypes = 0, message = "Kullanici veya sifre hatalı!" });
+            user.password = null;
+            
             return Ok(user);
         }
 
@@ -118,7 +120,7 @@ namespace CoreApi.Controllers
             }
             else
             {
-                return BadRequest(new { message = "Existing user" });
+                return BadRequest(new { reqTypes = 1, message = "Existing user" });
             }
            
         }
