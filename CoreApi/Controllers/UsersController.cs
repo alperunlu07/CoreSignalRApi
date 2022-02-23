@@ -9,6 +9,7 @@ using CoreApi.Data;
 using CoreApi.Models;
 using System.Text;
 using System.Security.Cryptography;
+using CoreApi.Helpers;
 
 namespace CoreApi.Controllers
 {
@@ -76,15 +77,27 @@ namespace CoreApi.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public async Task<IActionResult> Authenticate(string userName, string password)
+        public async Task<IActionResult> Authenticate(NewUser newUser)
         {
-            var user = await _context.User.SingleOrDefaultAsync(x => x.userName == userName && x.password == MD5Hash(password));
+            if(newUser.userName == null || newUser.password == null)
+                return BadRequest(new { message = "Null error" });
+            var user = await _context.User.SingleOrDefaultAsync(x => x.userName == newUser.userName && x.password == MD5Hash(newUser.password));
              
             if (user == null)
                 return BadRequest(new { message = "Kullanici veya sifre hatalı!" });
             return Ok(user);
         }
- 
+
+
+        [HttpGet("ReqList")]
+        public async Task<IActionResult> GetRequests()
+        {
+            var reqs = await _context.Requests.ToDictionaryAsync( x=> x.ReqTypes, x => x.Url);
+             
+            //ModelSerializer.Model2String<List<Requests>>(reqs)
+            return Ok(ModelSerializer.Model2String<Dictionary<string,string>>(reqs).Trim());
+        }
+
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -109,6 +122,7 @@ namespace CoreApi.Controllers
             }
            
         }
+
 
         //[HttpPost]
         //public async Task<ActionResult<User>> PostUser(User newUser)

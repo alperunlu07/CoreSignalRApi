@@ -15,5 +15,6 @@ namespace CoreApi.Data
         }
 
         public DbSet<CoreApi.Models.User> User { get; set; }
+        public DbSet<CoreApi.Models.Requests> Requests { get; set; }
     }
 }
