@@ -77,14 +77,14 @@ namespace CoreApi.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public async Task<IActionResult> Authenticate(NewUser newUser)
+        public async Task<IActionResult> Authenticate(User newUser)
         {
             if(newUser.userName == null || newUser.password == null)
                 return BadRequest(new { reqTypes = 0, message = "Null error" });
-            var user = await _context.User.SingleOrDefaultAsync(x => x.userName == newUser.userName && x.password == MD5Hash(newUser.password));
+            var user = await _context.User.SingleOrDefaultAsync(x => x.userName == newUser.userName && x.password == newUser.password);
              
             if (user == null)
-                return BadRequest(new { reqTypes = 0, message = "Kullanici veya sifre hatalı!" });
+                return BadRequest(new { reqTypes = 0, message = "Kullanici veya sifre hatali!" });
             user.password = null;
             
             return Ok(user);
@@ -104,7 +104,7 @@ namespace CoreApi.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> AddNewUser(NewUser newUser)
+        public async Task<ActionResult<User>> AddNewUser(User newUser)
         {
             var user = await _context.User.FirstOrDefaultAsync(x => x.userName == newUser.userName || x.email == newUser.email);
             if(user == null)
@@ -112,7 +112,7 @@ namespace CoreApi.Controllers
                 _context.User.Add(new Models.User
                 { 
                     userName = newUser.userName,
-                    password = MD5Hash(newUser.password),
+                    password = newUser.password,
                     email = newUser.email
                 });
                 await _context.SaveChangesAsync();

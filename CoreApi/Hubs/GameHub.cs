@@ -46,11 +46,12 @@ namespace CoreApi.Hubs
             string val = ModelSerializer.Model2String(activeUsers);
             Clients.Caller.SendAsync("AllUserId", val);
 
-            if (activeUsers.Count > 1)
-                Clients.AllExcept(cUser.connectionID).SendAsync("UserJoined", Context.ConnectionId);
+            //if (activeUsers.Count > 1)
+            //    Clients.AllExcept(cUser.connectionID).SendAsync("UserJoined", Context.ConnectionId);
+            Clients.All.SendAsync("UserJoined", Context.ConnectionId);
 
-            //Console.WriteLine("new user" + cUser.connectionID);
-            //Console.WriteLine("user count" + activeUsers.Count.ToString()); 
+            Console.WriteLine("new user " + cUser.connectionID);
+            Console.WriteLine("user count " + activeUsers.Count.ToString());
             return base.OnConnectedAsync();
         }
 
